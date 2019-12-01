@@ -1,0 +1,10 @@
+# Backup
+*~
+.#*
+
+# Program files
+a.out
+
+# Racket
+*.zo
+*.dep

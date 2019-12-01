@@ -1,0 +1,6 @@
+* Advent of Code
+
+  Pretty fun. Check it out at [[https://adventofcode.com/][adventofcode.com]].
+
+** License
+   See [[file:LICENSE][LICENSE]].
