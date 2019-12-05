@@ -1,0 +1,5 @@
+* Broken require
+
+  A little note until I fix it — when running one of the files in
+  =programs/= one will get a require path error. Just move the file
+  into the parent directory.
