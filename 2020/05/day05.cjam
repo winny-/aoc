@@ -1,0 +1,10 @@
+qN%                                       "read entire input. remove empty lines";
+{
+  {_'B={;1}{_'F={;0}{_'R={;1}{;0}?}?}?}%  "Map to binary";
+  2b                                      "Convert array of binary values to a number";
+}%                                        "Map the block on all inputs";
+$                                         "sort";
+)p                                        "part1";
+):X;                                      "initialize loop variable";
+{)_)X=\:X;}g                              "check to see if subsequent value is 1 away from the previous.";
+;X)                                       "dump out the answer, adjusting for loop step";
