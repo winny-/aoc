@@ -16,20 +16,24 @@ until $done; do
         if [[ $has_value ]]; then
             (( valid1++ ))
             if [[ ${record[byr]} =~ ^[0-9]{4}$ &&
-                      ${record[byr]} -ge 1920 &&
-                      ${record[byr]} -le 2002 &&
-                      ${record[iyr]} =~ ^[0-9]{4}$ &&
-                      ${record[iyr]} -ge 2010 &&
-                      ${record[iyr]} -le 2020 &&
-                      ${record[eyr]} =~ ^[0-9]{4}$ &&
-                      ${record[eyr]} -ge 2020 &&
-                      ${record[eyr]} -le 2030 &&
-                      ${record[hcl]} =~ ^#[0-9a-f]{6}$ &&
-                      ${record[ecl]} =~ ^(amb|blu|brn|gry|grn|hzl|oth)$ &&
-                      ${record[pid]} =~ ^[0-9]{9}$ &&
-                      ${record[hgt]} =~ ^([0-9]+)(cm|in)$ && (
-                          ( ${BASH_REMATCH[2]} = cm && ${BASH_REMATCH[1]} -ge 150 && ${BASH_REMATCH[1]} -le 193 ) ||
-                          ( ${BASH_REMATCH[2]} = in && ${BASH_REMATCH[1]} -ge 59 && ${BASH_REMATCH[1]} -le 76) ) ]]; then
+                  ${record[byr]} -ge 1920 &&
+                  ${record[byr]} -le 2002 &&
+                  ${record[iyr]} =~ ^[0-9]{4}$ &&
+                  ${record[iyr]} -ge 2010 &&
+                  ${record[iyr]} -le 2020 &&
+                  ${record[eyr]} =~ ^[0-9]{4}$ &&
+                  ${record[eyr]} -ge 2020 &&
+                  ${record[eyr]} -le 2030 &&
+                  ${record[hcl]} =~ ^#[0-9a-f]{6}$ &&
+                  ${record[ecl]} =~ ^(amb|blu|brn|gry|grn|hzl|oth)$ &&
+                  ${record[pid]} =~ ^[0-9]{9}$ &&
+                  ${record[hgt]} =~ ^([0-9]+)(cm|in)$ && (
+                      ( ${BASH_REMATCH[2]} = cm &&
+                        ${BASH_REMATCH[1]} -ge 150 &&
+                        ${BASH_REMATCH[1]} -le 193 ) ||
+                      ( ${BASH_REMATCH[2]} = in &&
+                        ${BASH_REMATCH[1]} -ge 59 &&
+                        ${BASH_REMATCH[1]} -le 76) ) ]]; then
                 (( valid2++ ))
             fi
         fi
