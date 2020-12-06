@@ -4,7 +4,9 @@
 
 # Program files
 a.out
+*.o
 
 # Racket
 *.zo
 *.dep
+
