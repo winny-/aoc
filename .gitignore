@@ -5,6 +5,7 @@
 # Program files
 a.out
 *.o
+*.class
 
 # Racket
 *.zo
