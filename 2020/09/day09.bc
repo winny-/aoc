@@ -1,0 +1,56 @@
+# Note: this also uses a borne shell script to prepend the number of inputs to
+# the input stream.  This is necessary because GNU bc's `read()' does not
+# handle EOF.
+{
+  ring_size = 25;
+  scale = 0;
+  count = read();
+  for (i = 0; i < count; i++) {
+    a[i] = read();
+  }
+  invalid = 0;
+  for (i = ring_size; i < count && !invalid; i++) {  /* Ring floor */
+    # print "i=", i, "\n";
+    valid = 0;
+    for (j = i - ring_size; j < i; j++) {  /* Tortoise */
+      # print "j=", j, "\n";
+      for (k = j + 1; k < i; k++) {  /* Hare */
+        # print "k=", k, "\n";
+        if (a[i] == (a[j]+a[k])) {
+          valid = 1;
+          break;
+        }
+      }
+    }
+    if (!valid) {
+      invalid = a[i];
+      break;
+    }
+  }
+  print invalid, "\n";
+  for (i = 0; i < count; i++) {
+    sum = a[i];
+    smallest = a[i];
+    largest = a[i];
+    for (j = i + 1; j < count; j++) {
+      if (a[j] < smallest) {
+        smallest = a[j];
+      }
+      if (a[j] > largest) {
+        largest = a[j];
+      }
+      sum += a[j];
+      if (sum > invalid) {
+        break;
+      }
+      if (sum == invalid) {
+        print smallest + largest, "\n";
+        halt;
+      }
+    }
+  }
+}
+
+# Local Variables:
+# compile-command: "./day09.sh < input.txt"
+# End:
