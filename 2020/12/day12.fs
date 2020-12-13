@@ -3,11 +3,14 @@
 
 create tape 2000 cells allot
 
+: 4dup ( w1 w2 w3 w4 -- w1 w2 w3 w4 w1 w2 w3 w4 )
+    3 pick 3 pick 3 pick 3 pick ;
+
+
 : 3dup ( w1 w2 w3 -- w1 w2 w3 w1 w2 w3 )
     2 pick 2 pick 2 pick ;
 
 : read-instruction ( f -- err c n )
-    
     pad 80 stdin read-line
     invert swap invert and if drop 0 0 -1 exit endif
     pad 1+ swap 1- s>number? invert if 0 0 -1 exit endif drop
@@ -24,7 +27,7 @@ create tape 2000 cells allot
         270 of 0 -1 endof
     endcase ;
 
-: forward ( d d d d -- d d d )
+: forward1 ( d d d d -- d d d )
     3 roll dup
     unit
     3 roll tuck * -rot * 4 roll + swap 3 roll +
@@ -38,14 +41,14 @@ create tape 2000 cells allot
 : distance ( d d -- u )
     abs swap abs + ;
 
-: dump-state ( d d d -- )
+: dump-state1 ( d d d -- )
     '[' emit . . . ']' emit ;
 
 : dump-instruction ( c d -- )
     emit . ;
 
 : step1 ( c u d d d -- d d d d )
-    \ 4 pick 4 pick 4 pick dump-state
+    \ 4 pick 4 pick 4 pick dump-state1
     \ space 2dup dump-instruction
     case
         'N' of rot swap - swap endof
@@ -54,9 +57,9 @@ create tape 2000 cells allot
         'W' of - endof
         'L of negate turn endof
         'R' of turn endof
-        'F' of forward endof
+        'F' of forward1 endof
     endcase
-    \ 2 pick 2 pick 2 pick dump-state cr
+    \ 2 pick 2 pick 2 pick dump-state1 cr
 ;
 
 : read-instructions
@@ -90,15 +93,58 @@ create tape 2000 cells allot
     loop 
     distance . cr drop ;
 
-\ TODO
+: move-waypoint
+    4 roll + swap  4 roll + swap 2swap ;
+
+: rotate-waypoint
+    over 0 = if 2drop exit endif
+    swap 90 - swap dup
+    6 roll 6 roll 3 roll
+    case
+        'L' of swap negate endof
+        'R' of negate swap endof
+    endcase
+    2rot 2rot
+    recurse
+;
+
+: forward2
+    dup 5 pick * swap 4 pick * rot + rot rot + swap ;
+
+: dump-state2
+    2swap '[' emit . . . . ']' emit space ;
+
+: step2
+    \ 2rot 2rot 4dup dump-state2 2rot
+    \ 2dup dump-instruction
+    case
+        'N' of negate 0 swap move-waypoint endof
+        'S  of 0 swap move-waypoint endof
+        'E' of 0 move-waypoint endof
+        'W' of negate 0 move-waypoint endof
+        'L' of 'L' rotate-waypoint endof
+        'R' of 'R' rotate-waypoint endof
+        'F' of forward2 endof
+    endcase
+    \ 4dup dump-state2 cr
+    ;
 : part2
-    drop 42 . cr ;
-    
+    10 -1 0 0
+    4 roll 0 ?do
+        i get-instruction step2
+    loop
+    \ cr
+    distance . cr drop ;
 
 read-instructions
 \ tape . cr
 \ tape 1 pick 2 * cells dump
 dup dup
 part1
+\ cr
 part2
 bye
+
+\ Local Variables:
+\ compile-command: "gforth day12.fs < input.txt"
+\ End:
