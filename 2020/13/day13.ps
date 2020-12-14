@@ -1,6 +1,8 @@
 %!PS
 
+/skip-part1 false def
 /debug false def                 % Set to true to enable   {some-code} ifdebug   blocks
+/progress true def
 /ifdebug {
     debug exch if
 } def
@@ -12,17 +14,29 @@
 /nl {() =} def
 
 % Dump the dict in a  key => value format
-/dump-dict {
+/dump-bus-dict {
     {
         exch
-        dump-pair nl
+        dump-bus nl
     } bind forall
 } def
 
-/dump-pair {
+/dump-bus {
     100 string cvs print
     ( => ) print
+    dup
+    0 get
     100 string cvs print
+    (:) print
+    1 get
+    100 string cvs print
+} def
+
+/dump-pair {
+    exch
+    100 string cvs print
+    ( => ) print
+    100 string cvs print    
 } def
 
 % Get the first key-value in a non-empty dict
@@ -41,15 +55,38 @@
     cvi
 } def
 
+/t-offset 0 def
 /busses 100 dict def
 /add-bus {
     dup (x) eq {
         pop
     }{
-        cvi
-        busses exch dup earliest-time exch leaves-at
-        put
+        cvi /bus-id exch def        
+        busses bus-id [
+            t-offset
+            earliest-time bus-id leaves-at
+        ]  put
     } ifelse
+    /t-offset t-offset 1 add def
+} def
+
+/fits-offsets? {
+    /fits? true def
+    busses {
+        0 get                   % offset
+        % {(init>  ) print stack} ifdebug
+        3 -1 roll dup
+        % {(setup> ) print stack} ifdebug
+        3 1 roll add           % roll in the time, add to offset
+        % {(offset>) print stack} ifdebug
+        3 2 roll
+        % {(modb4> ) print stack} ifdebug
+         mod
+        % {(modaft>) print stack} ifdebug
+        0 ne {/fits? false def exit} if
+        {(repeat>) print stack} ifdebug
+    } bind forall
+    fits?
 } def
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -70,37 +107,77 @@ input buf readline check-read-success
 } loop
 
 busses dict-first
-/min-time exch def
-/min-id exch def
+/part1-time exch 1 get def
+/part1-id exch def
 
 {
     (:::::::::::State:::::::::::) =
     (T: ) print earliest-time =
-    (M: ) print min-time min-id dump-pair nl
+    (M: ) print part1-time part1-id dump-pair nl
     (:::::::::::Dict::::::::::::) =
-    busses dump-dict
+    busses dump-bus-dict
     (:::::::::::::::::::::::::::) =
 } ifdebug
 
-busses {
-    {2dup exch dump-pair nl} ifdebug
-    dup 
-    min-time
-    {stack} ifdebug
-    lt {
-        /min-time exch def
-        /min-id exch def
-    } {
-        pop pop
-    } ifelse
-    {min-id min-time dump-pair nl (^^^^^^^^^^^^^^^^^^^^) print nl} ifdebug
-} forall
+skip-part1 not {
+    busses {
+        {2dup exch dump-bus nl} ifdebug
+        1 get
+        dup
+        part1-time
+        {stack} ifdebug
+        lt {
+            /part1-time exch def
+            /part1-id exch def
+        } {
+            pop pop
+        } ifelse
+        {part1-id part1-time dump-pair nl (^^^^^^^^^^^^^^^^^^^^) print nl} ifdebug
+    } bind forall
 
-{(********************) =
- min-id min-time dump-pair nl
- (********************) =} ifdebug
+    {
+        (********************) =
+        part1-id part1-time dump-pair nl
+        (********************) =
+    } ifdebug
 
-min-time earliest-time sub min-id mul =
+    part1-time earliest-time sub part1-id mul = flush
+} if
+
+/first-id busses {
+    0 get 0 eq {exit}{pop} ifelse
+} forall def
+
+/min-id busses dict-first pop busses {
+    pop
+    2dup
+    gt {exch pop}{pop} ifelse
+} forall def
+
+% /max-id busses dict-first pop busses {
+%     pop
+%     2dup
+%     lt {exch pop}{pop} ifelse
+% } forall def
+
+% 100000000000000 first-id mod ceiling cvi
+
+/index 100000 def
+/milestone 0 def
+
+first-id {
+    progress {
+        dup milestone sub index div 1 gt {
+            /milestone milestone index add def
+            (-> ) print milestone =
+        } if
+    } if
+    {dup (> ) print 100 string cvs print nl} ifdebug
+    fits-offsets? {exit} if
+    first-id add
+} loop
+
+=
 
 input closefile
 quit
