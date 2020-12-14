@@ -1,0 +1,110 @@
+%!PS
+
+/debug false def                 % Set to true to enable   {some-code} ifdebug   blocks
+/ifdebug {
+    debug exch if
+} def
+
+/2dup {
+    dup 3 2 roll dup 4 1 roll exch
+} def
+
+/nl {() =} def
+
+% Dump the dict in a  key => value format
+/dump-dict {
+    {
+        exch
+        dump-pair nl
+    } bind forall
+} def
+
+/dump-pair {
+    100 string cvs print
+    ( => ) print
+    100 string cvs print
+} def
+
+% Get the first key-value in a non-empty dict
+/dict-first {
+    {exit} bind forall
+} def
+
+/check-read-success {
+    not {quit} if
+} def
+
+% Calculate the earliest time this bus will leave on our timeframe.
+/leaves-at { % T[ earliest-time bus-id ]B -> T[ time ]B
+    dup 3 1 roll
+    div ceiling mul
+    cvi
+} def
+
+/busses 100 dict def
+/add-bus {
+    dup (x) eq {
+        pop
+    }{
+        cvi
+        busses exch dup earliest-time exch leaves-at
+        put
+    } ifelse
+} def
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+/input (%stdin) (r) file def    % Open stdin
+/buf 200 string def
+
+input buf readline check-read-success
+/earliest-time exch cvi def
+
+input buf readline check-read-success
+(,) {
+    search {
+        add-bus
+    }{
+        add-bus exit
+    } ifelse
+} loop
+
+busses dict-first
+/min-time exch def
+/min-id exch def
+
+{
+    (:::::::::::State:::::::::::) =
+    (T: ) print earliest-time =
+    (M: ) print min-time min-id dump-pair nl
+    (:::::::::::Dict::::::::::::) =
+    busses dump-dict
+    (:::::::::::::::::::::::::::) =
+} ifdebug
+
+busses {
+    {2dup exch dump-pair nl} ifdebug
+    dup 
+    min-time
+    {stack} ifdebug
+    lt {
+        /min-time exch def
+        /min-id exch def
+    } {
+        pop pop
+    } ifelse
+    {min-id min-time dump-pair nl (^^^^^^^^^^^^^^^^^^^^) print nl} ifdebug
+} forall
+
+{(********************) =
+ min-id min-time dump-pair nl
+ (********************) =} ifdebug
+
+min-time earliest-time sub min-id mul =
+
+input closefile
+quit
+
+% Local Variables:
+% compile-command: "gs -dNODISPLAY -dNOPAUSE day13.ps < sample.txt"
+% End:
