@@ -21,7 +21,7 @@ Submissions marked with *q* are complete for one challenge.
 | *GNU Forth*         |    |    |    |    |    |    |    |    |    |    |    |  [[file:12/day12.fs][x]] |    |    |    |    |    |    |    |    |    |    |    |    |    |
 | *Postscript*        |    |    |    |    |    |    |    |    |    |    |    |    |  [[file:13/day13.ps][q]] |    |    |    |    |    |    |    |    |    |    |    |    |
 | *Clojure*           |    |    |    |    |    |    |    |    |    |    |    |    |    |  [[file:14/day14.clj][q]] |    |    |    |    |    |    |    |    |    |    |    |
-|                     |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
+| *Haskell*           |    |    |    |    |    |    |    |    |    |    |    |    |    |    |  [[file:15/day15.hs][x]] |    |    |    |    |    |    |    |    |    |    |
 | *Python*            |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |  [[file:16/day16.py][q]] |    |    |    |    |    |    |    |    |    |
 |                     |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
 |                     |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
