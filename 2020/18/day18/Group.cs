@@ -4,7 +4,7 @@ namespace day18
     {
         public readonly Expression Expr;
 
-        public override int eval()
+        public override ulong eval()
         {
             return Expr.eval();
         }

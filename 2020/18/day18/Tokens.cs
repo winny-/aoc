@@ -34,8 +34,8 @@ namespace day18
 
     class LiteralToken : Token
     {
-        public readonly int Value;
-        public LiteralToken(int Value)
+        public readonly ulong Value;
+        public LiteralToken(ulong Value)
         {
             this.Value = Value;
         }

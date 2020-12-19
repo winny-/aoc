@@ -5,14 +5,18 @@ using System.Linq;
 
 namespace day18
 {
+
+    enum PrecedenceRule {
+        SameLevel,
+        PlusFirst,
+    }
+    
     class Expression
     {
-        public virtual int eval()
+        public virtual ulong eval()
         {
             throw new Exception("Not implemented");
         }
-
-        
 
         public static List<Token>tokenize(String s)
         {
@@ -40,7 +44,7 @@ namespace day18
                         break;
                     case char n when n <= '9' && n >= '0':
                         var m = Regex.Match(s, @"([0-9]+)(.*)");
-                        tokens.Add(new LiteralToken(int.Parse(m.Groups[1].Value)));
+                        tokens.Add(new LiteralToken(ulong.Parse(m.Groups[1].Value)));
                         s = m.Groups[2].Value;
                         break;
                     default:
@@ -52,12 +56,12 @@ namespace day18
         }
 
         // Woops.  This is left-associative.  I wanted a right-associative tree.
-        public static Expression fromString(String s)
+        public static Expression fromString(String s, PrecedenceRule rule)
         {
             List<Token> tokens = tokenize(s);
             // dumpTokens(tokens);
             // tokens.Reverse();
-            return fromTokens(tokens);
+            return fromTokens(tokens, rule);
         }
 
         public static void dumpTokens(List<Token> tokens)
@@ -65,7 +69,13 @@ namespace day18
             Console.WriteLine(String.Join(" ", tokens.Select(x => x.ToString())));
         }
 
-        public static Expression fromTokens(List<Token> tokens)
+        // public static Expression fromTokens(List<Token> tokens, PrecedenceRule rule)
+        // {
+        //     Stack<Token> stack = new Stack<Token>();
+        //     Stack<Expression>stack = new Stack<Expression>
+        // }
+
+        public static Expression fromTokens(List<Token> tokens, PrecedenceRule rule)
         {
             var t = tokens[tokens.Count-1];
             tokens.RemoveAt(tokens.Count-1);
@@ -97,7 +107,7 @@ namespace day18
                     }
                     else
                     {
-                        e1 = new Group(fromTokens(parenthesizedTokens));
+                        e1 = new Group(fromTokens(parenthesizedTokens, rule));
                         break;
                     }
                 }
@@ -118,12 +128,12 @@ namespace day18
             // Console.WriteLine($"next: {next}");
             if (next is BinopToken)
             {
-                return new Binop(fromTokens(tokens), ((BinopToken)next).Kind, e1);
+                return new Binop(fromTokens(tokens, rule), ((BinopToken)next).Kind, e1);
             }
             else if (next is LparenToken)
             {
                 tokens.Add(next);
-                return fromTokens(tokens);
+                return fromTokens(tokens, rule);
             }
 
 

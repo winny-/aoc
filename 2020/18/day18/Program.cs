@@ -18,15 +18,27 @@ namespace day18
                 }
                 lines.Add(line);
             }
-            long n = 0;
-            List<Expression> expressions = lines.Select(Expression.fromString).ToList();
-            foreach (var ex in expressions)
+            ulong n1 = 0;
+            ulong n2 = 0;
+            List<Expression> expressionsPart1 = lines.Select(
+                line => Expression.fromString(line, PrecedenceRule.SameLevel)
+            ).ToList();
+            List<Expression> expressionsPart2 = lines.Select(
+                line => Expression.fromString(line, PrecedenceRule.PlusFirst)
+            ).ToList();
+            foreach (var ex in expressionsPart1)
             {
-                long v = ex.eval();
-                n += v;
-                Console.Error.WriteLine($"{v} {ex}");
+                ulong v1 = ex.eval();
+                n1 += v1;
+                // Console.WriteLine($"{v}");
             }
-            Console.WriteLine(n);
+            foreach (var ex in expressionsPart2)
+            {
+                ulong v2 = ex.eval();
+                n2 += v2;
+            }
+            Console.WriteLine(n1);
+            Console.WriteLine(n2);
         }
     }
 }

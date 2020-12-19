@@ -2,14 +2,14 @@ namespace day18
 {
     class Literal : Expression
     {
-        public readonly int Value;
+        public readonly ulong Value;
 
-        public override int eval()
+        public override ulong eval()
         {
             return Value;
         }
 
-        public Literal(int val)
+        public Literal(ulong val)
         {
             Value = val;
         }

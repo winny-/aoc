@@ -1,9 +1,24 @@
 #+startup: indent
+
+* Advent of Code 2020
+
 I hope to use a different programming language every day.  Here is a matrix of
 the submissions by language.
 
+** Rules
+
 Submissions marked with *x* are complete for both daily challenges.
 Submissions marked with *q* are complete for one challenge.
+
+My rules for completion are simple:
+
+1. Complete each day with at least one language.
+2. Select one language to mark off the day with.  No other day can be marked
+   off with that language.  (It's okay to use the same language for
+   verification purposes, but not for the *x* or *q* in the bottom list.)
+3. Hopefully: complete AoC 2020 with the above rules before New Years.
+
+** The Matrix
 
 |                     | 01 | 02 | 03 | 04 | 05 | 06 | 07 | 08 | 09 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 |
 |---------------------+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----+----|
@@ -24,6 +39,7 @@ Submissions marked with *q* are complete for one challenge.
 | *Haskell*           |    |    |    |    |    |    |    |    |    |    |    |    |    |    |  [[file:15/day15.hs][x]] |    |    |    |    |    |    |    |    |    |    |
 | *Python*            |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |  [[file:16/day16.py][q]] |    |    |    |    |    |    |    |    |    |
 |                     |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
+| *C#*                |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |  [[file:18/day18/][q]] |    |    |    |    |    |    |    |
 |                     |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
 |                     |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
 |                     |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
@@ -31,5 +47,5 @@ Submissions marked with *q* are complete for one challenge.
 |                     |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
 |                     |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
 |                     |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
-|                     |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
+
 

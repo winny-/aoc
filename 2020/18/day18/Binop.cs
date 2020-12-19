@@ -15,11 +15,11 @@ namespace day18
         public readonly Expression Right;
         public readonly BinopKind Kind;
         
-        public override int eval()
+        public override ulong eval()
         {
             var le = Left.eval();
             var re = Right.eval();
-            int result = 0;
+            ulong result = 0;
             if (Kind == BinopKind.Times)
             {
                 result =  le * re;
