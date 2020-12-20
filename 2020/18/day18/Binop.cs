@@ -22,9 +22,9 @@ namespace day18
             ulong result = 0;
             if (Kind == BinopKind.Times)
             {
-                result =  le * re;
+                result =  checked(le * re);
             } else {
-                result =  le + re;
+                result =  checked(le + re);
             }
 
             // Console.Error.WriteLine($"{this} = {le} {(Kind == BinopKind.Plus ? '+' : '*')} {re} = {result}");
@@ -41,7 +41,7 @@ namespace day18
 
         public override string ToString()
         {
-            return $"{Left} {(Kind == BinopKind.Plus ? '+' : '*')} {Right}";
+            return $"{Right} {(Kind == BinopKind.Plus ? '+' : '*')} {Left}";
         }
     }
 }

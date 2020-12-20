@@ -28,14 +28,15 @@ namespace day18
             ).ToList();
             foreach (var ex in expressionsPart1)
             {
+                Console.Error.WriteLine(ex);
                 ulong v1 = ex.eval();
-                n1 += v1;
+                n1 = checked(n1 + v1);
                 // Console.WriteLine($"{v}");
             }
             foreach (var ex in expressionsPart2)
             {
                 ulong v2 = ex.eval();
-                n2 += v2;
+                n2 = checked(n2 + v2);
             }
             Console.WriteLine(n1);
             Console.WriteLine(n2);

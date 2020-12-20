@@ -113,8 +113,48 @@ namespace day18
                 }
                 else if (stack.Peek()?.Expression != null)
                 {
+                    bool reduce = true;
+                    if (rule == PrecedenceRule.PlusFirst)
+                    {
+                        int open = 0;
+                        int seen = 0;
+                        foreach (var t in tokens)
+                        {
+                            if (t is LparenToken)
+                            {
+                                open++;
+                                continue;
+                            }
+                            else if (t is RparenToken)
+                            {
+                                if (--open > 0)
+                                {
+                                    continue;
+                                }
+                                else if (open < 0)
+                                {
+                                    break;
+                                }
+                            }
+
+                            if (open == 0 && ++seen > 1)
+                            {
+                                break;
+                            }
+
+                            if (t is BinopToken)
+                            {
+                                BinopToken tok = t as BinopToken;
+                                if (tok.Kind == BinopKind.Plus)
+                                {
+                                    reduce = false;
+                                    break;
+                                }
+                            }
+                        }
+                    }
                     Expression e1 = stack.Pop().Expression;
-                    if (stack.TryPeek(out TokenOrExpression top) && top.Token is BinopToken)
+                    if (reduce && stack.TryPeek(out TokenOrExpression top) && top.Token is BinopToken)
                     {
                         BinopToken binop = stack.Pop().Token as BinopToken;
                         Expression e2 = stack.Pop().Expression;
