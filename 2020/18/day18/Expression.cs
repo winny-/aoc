@@ -6,9 +6,24 @@ using System.Linq;
 namespace day18
 {
 
-    enum PrecedenceRule {
+    enum PrecedenceRule
+    {
         SameLevel,
         PlusFirst,
+    }
+
+    class TokenOrExpression
+    {
+        public readonly Token Token;
+        public readonly Expression Expression;
+        public TokenOrExpression(Token token)
+        {
+            this.Token = token;
+        }
+        public TokenOrExpression(Expression expression)
+        {
+            this.Expression = expression;
+        }
     }
     
     class Expression
@@ -69,75 +84,55 @@ namespace day18
             Console.WriteLine(String.Join(" ", tokens.Select(x => x.ToString())));
         }
 
-        // public static Expression fromTokens(List<Token> tokens, PrecedenceRule rule)
-        // {
-        //     Stack<Token> stack = new Stack<Token>();
-        //     Stack<Expression>stack = new Stack<Expression>
-        // }
-
         public static Expression fromTokens(List<Token> tokens, PrecedenceRule rule)
         {
-            var t = tokens[tokens.Count-1];
-            tokens.RemoveAt(tokens.Count-1);
-            Expression e1 = null;
-            if (t is RparenToken)
+            Stack<TokenOrExpression> stack = new Stack<TokenOrExpression>();
+            while (true)
             {
-                int open = 1;
-                List<Token> parenthesizedTokens = new List<Token>();
-                while (true)
+                if (tokens.Count == 0 && stack.Count == 1 && stack.Peek()?.Expression != null)
                 {
+                    return stack.Pop().Expression;
+                }
 
-                    var u = tokens[tokens.Count-1];
-                    tokens.RemoveAt(tokens.Count-1);
-                    // Console.WriteLine($"u: {u}");
-                    // dumpTokens(parenthesizedTokens);
-                    if (u is RparenToken)
+                if (stack.Count == 0)
+                {
+                    stack.Push(new TokenOrExpression(tokens[0]));
+                    tokens.RemoveAt(0);
+                }
+                else if (stack.Peek()?.Token is LiteralToken)
+                {
+                    ulong val = (stack.Pop().Token as LiteralToken).Value;
+                    stack.Push(new TokenOrExpression(new Literal(val)));
+                }
+                else if (stack.Peek()?.Token is RparenToken)
+                {
+                    stack.Pop();  // Rparen
+                    Expression g = new Group(stack.Pop().Expression);
+                    stack.Pop();  // Lparen
+                    stack.Push(new TokenOrExpression(g));
+                }
+                else if (stack.Peek()?.Expression != null)
+                {
+                    Expression e1 = stack.Pop().Expression;
+                    if (stack.TryPeek(out TokenOrExpression top) && top.Token is BinopToken)
                     {
-                        open++;
-
+                        BinopToken binop = stack.Pop().Token as BinopToken;
+                        Expression e2 = stack.Pop().Expression;
+                        stack.Push(new TokenOrExpression(new Binop(e1, binop.Kind, e2)));
                     }
-                    else if (u is LparenToken)
+                    else  // Probably Lparen
                     {
-                        open--;
-                    }
-                    if (open > 0)
-                    {
-                        parenthesizedTokens.Insert(0, u);
-                        // parenthesizedTokens.Add(u);
-                    }
-                    else
-                    {
-                        e1 = new Group(fromTokens(parenthesizedTokens, rule));
-                        break;
+                        stack.Push(new TokenOrExpression(e1));
+                        stack.Push(new TokenOrExpression(tokens[0]));
+                        tokens.RemoveAt(0);
                     }
                 }
+                else
+                {
+                    stack.Push(new TokenOrExpression(tokens[0]));
+                    tokens.RemoveAt(0);                    
+                }
             }
-            else if (t is LiteralToken)
-            {
-                e1 = new Literal(((LiteralToken)t).Value);
-            }
-            if (tokens.Count == 0)
-            {
-                return e1;
-            }
-
-            // dumpTokens(tokens);
-
-            Token next = tokens[tokens.Count-1];
-            tokens.RemoveAt(tokens.Count-1);
-            // Console.WriteLine($"next: {next}");
-            if (next is BinopToken)
-            {
-                return new Binop(fromTokens(tokens, rule), ((BinopToken)next).Kind, e1);
-            }
-            else if (next is LparenToken)
-            {
-                tokens.Add(next);
-                return fromTokens(tokens, rule);
-            }
-
-
-            throw new Exception("Illegal state");
         }
     }
 }
