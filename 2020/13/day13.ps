@@ -2,7 +2,7 @@
 
 /skip-part1 false def
 /debug false def                 % Set to true to enable   {some-code} ifdebug   blocks
-/progress true def
+/progress false def
 /ifdebug {
     debug exch if
 } def
@@ -12,6 +12,14 @@
 } def
 
 /nl {() =} def
+
+/gcd {
+    dup 0 eq {
+        pop
+    }{
+        dup 3 1 roll mod gcd
+    } ifelse
+} def
 
 % Dump the dict in a  key => value format
 /dump-bus-dict {
@@ -37,6 +45,18 @@
     100 string cvs print
     ( => ) print
     100 string cvs print    
+} def
+
+/dump-conguences {
+    {
+        dup
+        (x≡) print
+        0 get 100 string cvs print
+        (\(mod ) print
+        1 get 100 string cvs print
+        (\)) print
+        nl
+    } bind forall
 } def
 
 % Get the first key-value in a non-empty dict
@@ -87,6 +107,25 @@
         {(repeat>) print stack} ifdebug
     } bind forall
     fits?
+} def
+
+/mul-inv {
+    dup 1 eq {
+        pop 1
+    }{
+        /ret 0 def
+        dup
+        1 exch 1 exch {
+            3 -2 roll  2dup  5 -1 roll dup 4 -1 roll  mul
+            3 -1 roll  mod 1 eq {
+                3 1 roll pop pop
+                /ret exch def
+            }{
+                pop
+            }ifelse
+        } for
+        ret
+    } ifelse
 } def
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -165,17 +204,57 @@ skip-part1 not {
 /index 100000 def
 /milestone 0 def
 
-first-id {
-    progress {
-        dup milestone sub index div 1 gt {
-            /milestone milestone index add def
-            (-> ) print milestone =
+% Verify each bus id is pairwise coprime.
+busses {
+    pop
+    busses {
+        pop
+        2dup eq {               % Skip comparison against self
+            pop
+        }{
+            2dup gcd 1 eq {
+                pop
+            }{
+                (gcd of ) print
+                100 string cvs print
+                ( ) print
+                100 string cvs print
+                ( ne 1.  Exiting.) print nl
+                quit
+            } ifelse
+        } ifelse
+    } forall
+} forall
+pop pop pop pop
+
+false {
+    % Naive approach.  Works for all the samples, but the input requires the
+    % application of a mathemital thoery to run in any reasonable time.
+    first-id {
+        progress {
+            dup milestone sub index div 1 gt {
+                /milestone milestone index add def
+                (-> ) print milestone =
+            } if
         } if
-    } if
-    {dup (> ) print 100 string cvs print nl} ifdebug
-    fits-offsets? {exit} if
-    first-id add
-} loop
+        {dup (> ) print 100 string cvs print nl} ifdebug
+        fits-offsets? {exit} if
+        first-id add
+    } bind loop
+}{
+    (#) print busses length 100 string cvs print  nl
+    /idx 0 def
+    busses length dup array exch {dup} repeat
+    busses {
+        0 get
+        exch
+        2 array  astore
+        idx exch
+        put
+        /idx idx 1 add def
+    } forall dump-conguences
+    quit                        % XXX
+} ifelse
 
 =
 
