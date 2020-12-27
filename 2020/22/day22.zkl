@@ -1,19 +1,83 @@
-Attributes(script);
+/*
+This was pretty fun.  ZKL is a pretty cool passion language.  It is powerful
+and flexible enough to be useful for many different sorts of tasks.  The author
+also has a fanstanic taste in humor, with lots of quirky identifiers and
+semantics, but aren't super annoying, as is the fate for many passion
+languages.  I had to switch to Clang-compiled zkl binary which halved the
+running time of this program.  Earlier, this program did not prune tiles that
+are White, but exist in the floor Dictionary.  This led to a lot of needless
+iterations.  Pruning reduced running time by at around an order-of-maginuted.
 
-var seen1 = Dictionary();
+The final running time for the solution is just shy of 2 minutes on my Pentium
+M Thinkpad X31.
+*/
 
-fcn move(xy, hat) {
-  # println("xy:"+xy+" hat:"+hat);
-  if (hat[1]) {
-    xoff := if ((xy[1] % 2).abs() == 0) {
-      if (hat[0] > 0) { hat[0] } else { 0 }
+Attributes(script);  # Yes this is a script.
+
+/*
+According to the handbook, Dictionary with key of string or int is guarenteed
+to be unique based on its value.  When other objects are used, its id is used,
+which is unique to the instance of that object.  To avoid having to use a
+string representation of the XY pair as the dictionary key, Intern the pairs
+using an instance of InternedPairTable.
+*/
+class InternedPairTable {
+  var [private] known_x;
+  var [private] known_ids;
+  fcn init() {
+    known_x = Dictionary();
+    known_ids = Dictionary();
+  }
+  fcn pair(x, y) {
+    if (not known_x.holds(x)) {
+      known_x[x] = Dictionary()
     }
-    else {
-      if (hat[0] < 0) { hat[0] } else { 0 }
-    };
-    L(xy[0] + xoff, xy[1] + hat[1])
+    known_y := known_x[x];
+    if (known_y.holds(y)) {
+      known_y[y]
+    } else {
+      pair := Pair(x, y);
+      known_ids[pair] = known_y[y] = pair
+    }
+  }
+  fcn byID(id) {
+    known_ids.holds(id) and known_ids[id]
+  }
+}
+
+class Pair {
+  var [private] _x;
+  var [private] _y;
+  var [proxy] x = fcn { _x };
+  var [proxy] y = fcn { _y };
+  fcn init(x,y) {
+    _x = x;
+    _y = y;
+  }
+  fcn toString() {
+    "(%s, %s)".fmt(x, y);
+  }
+  fcn __sGet(idx) {
+    switch (idx) {
+      case(0) { x }
+      case(1) { y }
+      else    { throw(Exception.IndexError("Bad index on pair `%s\'".fmt(idx))) }
+    }
+  }
+}
+
+var floor = Dictionary();
+var p = InternedPairTable();
+
+fcn move(loc, hat) {
+  # println("loc:"+loc+" hat:"+hat);
+  if (hat.y) {
+    cond := if ((loc.y % 2).abs() == 0) { hat.x > 0 }
+            else { hat.x < 0 };
+    xoff := if (cond) { hat.x } else { 0 };
+    p.pair(loc.x + xoff, loc.y + hat.y)
   } else {
-    L(xy[0] + hat[0], xy[1])
+    p.pair(loc.x + hat.x, loc.y)
   }
 }
 
@@ -23,7 +87,7 @@ fcn directionToXY(direction) {
   y := if (direction.holds("n")) { 1 }
        else if (direction.holds("s")) { -1 }
        else { 0 };
-  List(x,y);
+  p.pair(x,y);
 }
 
 fcn lineToInstructions(line) {
@@ -42,17 +106,80 @@ fcn lineToInstructions(line) {
   }, line);
 }
 
+fcn neighbors(fl, loc) {
+  # println("%s %s".fmt(fl, loc));
+  Utils.Generator(fcn (fl1, loc1){
+    foreach di in (L(p.pair(-1,  1), p.pair(1,  1),
+                     p.pair(-1,  0), p.pair(1,  0),
+                     p.pair(-1, -1), p.pair(1, -1))) {
+      idx := move(loc1, di);
+      vm.yield(L(idx, if (fl1.holds(idx)) { fl1[idx] } else { False }))
+    }
+  }, fl, loc);
+}
+
+fcn getOrDefault(d, k, v) {
+  if (d.holds(k)) { d[k] }
+  else { v }
+}
+
+fcn age(fl) {
+  ret := fl.copy();
+  foreach k,v in (fl.howza(0)) {
+    idx := p.byID(k);
+    neigh := neighbors(fl, idx).pump(List);
+    # println(neigh);
+    # println(11111);
+    if (v) {
+      nBlackTiles := neigh.reduce('wrap(a,b) { a + b[1].toInt() }, 0);
+      if (nBlackTiles == 0 or nBlackTiles > 2) {
+        ret.del(idx)
+      }
+    } else {
+      ret.del(idx)
+    }
+    foreach n in (neigh.filter(fcn(n) { (not n[1]) })) {
+      neigh2 := neighbors(fl, n[0]);
+      nWhiteTiles := neigh2.reduce('wrap(a,b) { a + b[1].toInt() }, 0);
+      if (nWhiteTiles == 2) {
+        ret[n[0]] = True
+      }
+    }
+  }
+  ret
+}
+
+fcn countBlack(fl) {
+  # howza(9)  sets up walker/pump to operate on a sequence of dictionary values.
+  fl.howza(9).reduce(fcn(a,b){
+    # toInt() coerces the boolean to an integer.
+    # And I + B will be the same as I + B.toInt().
+    # However B + B -> B or B.
+    a.toInt() + b
+  })
+}
+
 instructions := File.stdin.reduce(fcn(acc, line){
   text := line.replace("\n", "");
   acc.append(lineToInstructions(text))
 }, L());
 
 foreach ins in (instructions) {
-  xy := ins.reduce(move, List(0, 0));
-  key := xy.toString();
-  v := if (seen1.holds(key)) { (not seen1[key]) }
-       else { True };
-  seen1[key] = v;
+  xy := ins.reduce(move, p.pair(0, 0));
+  key := xy;
+  v := (not getOrDefault(floor, key, False));
+  floor[key] = v;
 }
 
-println(seen1.howza(9).reduce(fcn(a,b) { a.toInt() + b; }));
+floor.makeReadOnly();
+println(countBlack(floor));
+var fl;
+fl = floor;
+var n = 0;
+foreach day in ([1..100]) {
+  fl = age(fl);
+  fl.makeReadOnly();
+  n = countBlack(fl);
+  File.stderr.println("Day %s: %s".fmt(day, n));
+}
+println(n);
