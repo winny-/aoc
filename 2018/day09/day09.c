@@ -113,6 +113,14 @@ int main(int argc, char **argv) {
 
 	printf("%u\n", winning_score);
 
+	struct marble *marble = state->ring;
+	while (marble) {
+		marble = remove_marble(marble);
+	}
+	free(state->scores);
+	free(state->spec);
+	free(state);
+
 	return 0;
 }
 
