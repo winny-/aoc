@@ -3,11 +3,10 @@
 (struct Instruction [what mag] #:transparent)
 
 (define (read-instruction [ip (current-input-port)])
-  (match (read)
-    [(? eof-object? e) e]
-    [what (match (read)
-            [(? eof-object? e) e]
-            [mag (Instruction what mag)])]))
+  (match* ((read) (read))
+    [((? eof-object? e) _) e]
+    [(_ (? eof-object? e)) e]
+    [(what mag) (Instruction what mag)]))
 
 (define (part1 ls)
   (for/fold ([hor 0]
