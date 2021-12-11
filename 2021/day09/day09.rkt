@@ -17,9 +17,11 @@
 (define/match (lookup grid loc)
   [(_ (list x y)) (list-ref (list-ref grid y) x)])
 
-(define (digit? v) (between/c 0 9))
+(define (digit? v)
+  (between/c 0 9))
 
-(define (loc? v) (list/c exact-nonnegative-integer? exact-nonnegative-integer?))
+(define (loc? v)
+  (list/c exact-nonnegative-integer? exact-nonnegative-integer?))
 
 (define/contract (find-basin grid loc)
   (-> (listof (listof digit?)) loc? (set/c loc?))
