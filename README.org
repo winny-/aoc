@@ -2,5 +2,11 @@
 
   Pretty fun. Check it out at [[https://adventofcode.com/][adventofcode.com]].
 
+** Greasemonkey script
+
+   The website could use some readability improvements, so I cobbled together a
+   small Greasemonkey script to address that.  See its [[file:greasemonkey/README.org][own readme]].
+
 ** License
    See [[file:LICENSE][LICENSE]].
+

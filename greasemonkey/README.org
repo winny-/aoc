@@ -1,0 +1,25 @@
+#+startup: indent
+* Greasemonkey script to improve website presentation
+
+See the source at [[file:adventofcode.js][adventofcode.js]].
+
+Source Code Pro seems to be a bit hard to read at small o medium font sizes.
+It could be my browser's font rendering, but the solution is the same - fix the
+website to allow user specified font size and family.
+
+This also reverts some of the text shadow to be emboldened.
+
+Finally the sponsors sidebar is reduced in opacity to help guide the user
+towards the main web content.
+
+** Screenshots
+
+*** Homepage
+[[file:homepage.png]]
+
+*** 2021 Day 11
+[[file:2021day11.png]]
+
+*** See the sponsor sidebar
+[[file:sponsor.png]]
+
