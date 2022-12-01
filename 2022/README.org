@@ -1,0 +1,8 @@
+#+startup: indent
+
+* Advent of Code 2022
+
+** Goals
+
+To practice Clojure.
+
