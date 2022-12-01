@@ -1,7 +1,7 @@
 #+startup: indent
 * Greasemonkey script to improve website presentation
 
-See the source at [[file:adventofcode.js][adventofcode.js]].
+See the source at [[file:adventofcode.user.js][adventofcode.user.js]].  [[https://github.com/winny-/aoc/blob/master/greasemonkey/adventofcode.user.js][Click here]] to install.
 
 Source Code Pro seems to be a bit hard to read at small o medium font sizes.
 It could be my browser's font rendering, but the solution is the same - fix the
