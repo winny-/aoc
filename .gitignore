@@ -11,3 +11,5 @@ a.out
 *.zo
 *.dep
 
+__pycache__
+*.pyc
