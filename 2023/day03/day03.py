@@ -2,23 +2,9 @@ from collections.abc import Iterable
 import unittest, re
 
 NUMBER_REGEX = re.compile(r'[0-9]+')
-NUMBER_BEGIN_REGEX = re.compile(r'^[0-9]+')
-NUMBER_END_REGEX = re.compile(r'[0-9]+$')
 SYMBOL_REGEX = re.compile(r'[^0-9.]')
 GEAR_REGEX = re.compile(r'\*')
 
-
-def part_numbers(lines: [str]) -> Iterable[int]:
-    for lno, line in enumerate(lines):
-        for m in NUMBER_REGEX.finditer(line):
-            start, end = m.span(0)
-            prev_lno, next_lno = lno-1, lno+1
-            def check_line(target_line):
-                return (0 <= target_line < len(lines)
-                        and SYMBOL_REGEX.search(lines[target_line][max(0, start-1):end+1]))
-            if check_line(prev_lno) or check_line(next_lno) or check_line(lno):
-                i = int(m.group(0))
-                yield i
 
 def interested_lines(lines: [str], lino: int) -> Iterable[str]:
     plino = lino-1
@@ -38,6 +24,12 @@ def neighbors(lines: [str], lino: int, col: int) -> Iterable[int]:
                 (col-1 <= start <= col+1) or
                 (start <= col <= end)):
                 yield int(m.group(0))
+
+
+def part_numbers(lines: [str]) -> Iterable[int]:
+    for lno, line in enumerate(lines):
+        for m in SYMBOL_REGEX.finditer(line):
+             yield from neighbors(lines, lno, m.start(0))
 
 
 def gear_ratios(lines: [str]) -> Iterable[int]:
