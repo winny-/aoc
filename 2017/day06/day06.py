@@ -7,10 +7,6 @@ def redistribute(banks):
     index, blocks = max(enumerate(banks),
                         key=lambda a: (a[1], len(banks)-a[0]))
     banks[index] = 0
-    if blocks > len(banks):
-        each = blocks // len(banks)
-        banks = [each+b for b in banks]
-        blocks -= each * len(banks)
     for i in range(1, blocks+1):
         banks[(index+i) % len(banks)] += 1
     return banks
