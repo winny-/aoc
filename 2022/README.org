@@ -6,3 +6,6 @@
 
 To practice Clojure.
 
+** New Goal
+
+To practice.
