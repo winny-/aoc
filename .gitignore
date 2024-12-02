@@ -13,3 +13,6 @@ a.out
 
 __pycache__
 *.pyc
+
+core
+*.core
