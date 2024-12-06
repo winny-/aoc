@@ -106,41 +106,40 @@ def main(input, debug):
             #     breakpoint()
             # topleft (and NOT topcenter) offsets
             # dr = delta row, dc = delta column.
-            for dr, dc in [(-1, -1)]:
-                l2, c2 = lineno+dr, col+dc
-                if not valid_linecol(l2, c2):
-                    continue
-                sym = L[l2][c2]
-                T = {'M': 'S', 'S': 'M'}
-                if sym not in T:
-                    continue
-                other = T[sym]
-                l3, c3 = lineno-dr, col-dc
-                if not valid_linecol(l3, c3):
-                    continue
-                if L[l3][c3] != other:
-                    continue
+            dr, dc = -1, -1
+            l2, c2 = lineno+dr, col+dc
+            if not valid_linecol(l2, c2):
+                continue
+            sym = L[l2][c2]
+            T = {'M': 'S', 'S': 'M'}
+            if sym not in T:
+                continue
+            other = T[sym]
+            l3, c3 = lineno-dr, col-dc
+            if not valid_linecol(l3, c3):
+                continue
+            if L[l3][c3] != other:
+                continue
 
-                dr2, dc2 = (dc, -dr)
-                l4, c4 = lineno+dr2, col+dc2
-                if not valid_linecol(l4, c4):
-                    continue
-                sym = L[l4][c4]
-                if sym not in T:
-                    continue
-                other = T[sym]
-                l5, c5 = lineno-dr2, col-dc2
-                if not valid_linecol(l5, c5):
-                    continue
-                if L[l5][c5] != other:
-                    continue
+            dr2, dc2 = (dc, -dr)
+            l4, c4 = lineno+dr2, col+dc2
+            if not valid_linecol(l4, c4):
+                continue
+            sym = L[l4][c4]
+            if sym not in T:
+                continue
+            other = T[sym]
+            l5, c5 = lineno-dr2, col-dc2
+            if not valid_linecol(l5, c5):
+                continue
+            if L[l5][c5] != other:
+                continue
 
-                HL.extend([(lineno, col),
-                           (l2, c2), (l3, c3), (l4, c4), (l5, c5)])
+            HL.extend([(lineno, col),
+                       (l2, c2), (l3, c3), (l4, c4), (l5, c5)])
 
-                # click.echo((lineno, col, ch))
-                part2 += 1
-                break
+            # click.echo((lineno, col, ch))
+            part2 += 1
 
     if debug:
         for lineno, line in enumerate(L):
